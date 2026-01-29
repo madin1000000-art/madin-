@@ -1,0 +1,71 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a2e;
+    color: white;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    background: #16213e;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+h2 { text-align: center; color: #4ecca3; }
+
+.box, .result-box {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+label { margin-bottom: 8px; font-size: 14px; color: #bbb; }
+
+textarea, input {
+    background: #0f3460;
+    border: 1px solid #4ecca3;
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+textarea { height: 100px; resize: none; }
+
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+button {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-encrypt { background: #e94560; color: white; }
+.btn-decrypt { background: #4ecca3; color: #1a1a2e; }
+
+button:active { transform: scale(0.95); }
+
+.result-text {
+    background: #0f3460;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 50px;
+    word-break: break-all;
+    border: 1px dashed #4ecca3;
+}
+
+#copyBtn {
+    margin-top: 10px;
+    background: #533483;
+    color: white;
+    font-size: 13px;
+}
