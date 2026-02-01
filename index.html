@@ -3,35 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشفّر الرسائل السري</title>
-    <link rel="stylesheet" href="style.css">
+    <title>HACKER ENCRYPTOR - Offline App</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background-color: #000; color: #0f0;
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+
+        #matrix-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
+
+        .container {
+            background: rgba(0, 15, 0, 0.95);
+            padding: 20px; border: 1px solid #0f0;
+            box-shadow: 0 0 20px #0f0;
+            width: 90%; max-width: 500px;
+            margin-top: 50px; z-index: 1;
+        }
+
+        h2 { text-align: center; text-shadow: 0 0 10px #0f0; font-size: 1.2rem; }
+
+        .box { display: flex; flex-direction: column; gap: 12px; }
+
+        select, textarea, input {
+            background: #000; border: 1px solid #0f0;
+            color: #0f0; padding: 10px; width: 100%; box-sizing: border-box;
+        }
+
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        
+        button {
+            padding: 12px; border: 1px solid #0f0;
+            background: transparent; color: #0f0;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+
+        button:hover { background: #0f0; color: #000; box-shadow: 0 0 10px #0f0; }
+
+        .social-section {
+            margin-top: 20px; display: flex; flex-direction: column; gap: 10px;
+            border-top: 1px solid #0f0; padding-top: 15px;
+        }
+
+        .social-btn {
+            text-decoration: none; text-align: center;
+            font-size: 0.8rem; border: 1px dashed #0f0; padding: 8px; color: #0f0;
+        }
+
+        .result-text {
+            word-wrap: break-word; background: rgba(0, 40, 0, 0.5);
+            padding: 10px; border: 1px solid #0f0; margin: 10px 0; min-height: 40px;
+        }
+
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
+<canvas id="matrix-canvas"></canvas>
+
 <div class="container">
-    <h2>🔐 موقع مدين لتشفير الرسائل</h2>
+    <h2>[صانع التطبيق مدين v3.0]</h2>
     
     <div class="box">
-        <label>الرسالة (أو الكود المشفر):</label>
-        <textarea id="message" placeholder="اكتب رسالتك هنا للتشفير، أو الصق الكود لفك التشفير..."></textarea>
+        <select id="cipherType">
+            <option value="AES">AES - تشفير عسكري</option>
+            <option value="TripleDES">TripleDES - قديم</option>
+            <option value="Rabbit">Rabbit - فائق السرعة</option>
+        </select>
+
+        <textarea id="message" placeholder="أدخل النص هنا..."></textarea>
         
-        <label>المفتاح السري (كلمة المرور):</label>
-        <input type="text" id="secretKey" placeholder="أدخل مفتاحاً سرياً مشتركاً...">
+        <input type="checkbox" id="noKeyToggle" onchange="toggleKey()"> <label for="noKeyToggle">تشفير بدون كلمة سر</label>
+        
+        <input type="password" id="secretKey" placeholder="كلمة السر">
         
         <div class="actions">
-            <button onclick="encryptMessage()" class="btn-encrypt">تشفير 🔒</button>
-            <button onclick="decryptMessage()" class="btn-decrypt">فك التشفير 🔓</button>
+            <button onclick="process(true)">تشفير 🔒</button>
+            <button onclick="process(false)">فك التشفير 🔓</button>
         </div>
+
+        <div id="result" class="result-text">Waiting...</div>
+        <button onclick="copyResult()" id="copyBtn" class="hidden">نسخ الكود 📋</button>
     </div>
 
-    <div class="result-box">
-        <label>النتيجة:</label>
-        <div id="result" class="result-text">ستظهر النتيجة هنا...</div>
-        <button onclick="copyResult()" id="copyBtn" style="display:none;">نسخ النتيجة 📋</button>
+    <div class="social-section">
+        <a href="https://www.instagram.com/madin_alshaotare?igsh=Z2tnNm8xbmdwc21t" class="social-btn" target="_blank">تابعني علىTikTok ></a>
+        <a href="https://www.tiktok.com/@user48194875246153?_r=1" class="social-btn" target="_blank">تابعني علىInstagram ></a>
     </div>
 </div>
 
-<script src="script.js"></script>
+<script>
+    // مصفوفة الماتريكس
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.height = window.innerHeight; canvas.width = window.innerWidth;
+    const chars = "0101010101";
+    const fontSize = 16;
+    const drops = Array(Math.floor(canvas.width/fontSize)).fill(1);
+
+    function draw() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0f0";
+        ctx.font = fontSize + "px monospace";
+        drops.forEach((y, i) => {
+            const text = chars[Math.floor(Math.random()*chars.length)];
+            ctx.fillText(text, i*fontSize, y*fontSize);
+            if(y*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        });
+    }
+    setInterval(draw, 35);
+
+    function toggleKey() {
+        document.getElementById('secretKey').classList.toggle('hidden');
+    }
+
+    const DEF_KEY = "OFFLINE_SECRET_2026";
+
+    function process(isEncrypt) {
+        const msg = document.getElementById('message').value;
+        const cipher = document.getElementById('cipherType').value;
+        const noKey = document.getElementById('noKeyToggle').checked;
+        let key = noKey ? DEF_KEY : document.getElementById('secretKey').value;
+
+        if(!msg || (!noKey && !key)) { alert("Data Missing!"); return; }
+
+        try {
+            let res;
+            if(isEncrypt) {
+                res = CryptoJS[cipher].encrypt(msg, key).toString();
+            } else {
+                res = CryptoJS[cipher].decrypt(msg, key).toString(CryptoJS.enc.Utf8);
+            }
+            document.getElementById('result').innerText = res || "ERROR: Wrong Key";
+            document.getElementById('copyBtn').classList.remove('hidden');
+        } catch(e) { alert("Execution Failed!"); }
+    }
+
+    function copyResult() {
+        navigator.clipboard.writeText(document.getElementById('result').innerText);
+        alert("Copied!");
+    }
+</script>
 </body>
 </html>
+
